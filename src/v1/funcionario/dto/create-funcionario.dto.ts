@@ -6,7 +6,7 @@ export class CreateFuncionarioDto {
   Name: string;
   cargo_id: string;
   endereco_id: string;
-  endereco: Endereco;
-  telefones: Telefone[];
+  endereco?: Endereco;
+  telefones?: Telefone[];
   Usuario?: User;
 }

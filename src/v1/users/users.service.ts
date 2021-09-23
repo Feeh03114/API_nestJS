@@ -18,29 +18,36 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const { funcionario } = createUserDto;
     const { endereco, telefones } = funcionario;
+    let funcionarioSaved;
 
     // add endereco ao funcionario
-    const enderecoRepository = getRepository(Endereco);
-    const enderecoCreated = enderecoRepository.create(endereco);
+    if (!funcionario.endereco_id) {
+      const enderecoRepository = getRepository(Endereco);
+      const enderecoCreated = enderecoRepository.create(endereco);
 
-    const enderecoSaved = await enderecoRepository.save(enderecoCreated);
-    const { id: id_endereco } = enderecoSaved;
+      const enderecoSaved = await enderecoRepository.save(enderecoCreated);
+      const { id: id_endereco } = enderecoSaved;
 
-    const funcionario2 = {
-      ...funcionario,
-      endereco_id: id_endereco,
-    };
+      const funcionario2 = {
+        ...funcionario,
+        endereco_id: id_endereco,
+      };
 
-    delete funcionario2.endereco;
-    delete funcionario2.telefones;
+      delete funcionario2.endereco;
+      delete funcionario2.telefones;
 
-    // add funcionario ao usuario
-    const funcionarioRepository = getRepository(Funcionario);
-    const funcionarioCreated = funcionarioRepository.create(funcionario2);
+      // add funcionario ao usuario
+      const funcionarioRepository = getRepository(Funcionario);
+      const funcionarioCreated = funcionarioRepository.create(funcionario2);
 
-    const funcionarioSaved = await funcionarioRepository.save(
-      funcionarioCreated,
-    );
+      funcionarioSaved = await funcionarioRepository.save(funcionarioCreated);
+    } else {
+      delete funcionario.telefones;
+      const funcionarioRepository = getRepository(Funcionario);
+      const funcionarioCreated = funcionarioRepository.create(funcionario);
+
+      funcionarioSaved = await funcionarioRepository.save(funcionarioCreated);
+    }
     const { id: id_funcionario } = funcionarioSaved;
 
     // add telefone ao funcionario
